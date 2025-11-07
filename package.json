@@ -1,6 +1,6 @@
 {
   "name": "rails_sluggable",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A Rails plugin for generating configurable model slugs.",
   "scripts": {
     "dev": "cd test/dummy && rails server",
@@ -10,5 +10,10 @@
     "release": "release-it"
   },
   "author": "afeiship",
-  "license": "ISC"
+  "license": "ISC",
+  "keywords": [
+    "rails",
+    "tag",
+    "slugify"
+  ]
 }
