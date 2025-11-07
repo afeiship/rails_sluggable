@@ -1,0 +1,24 @@
+{
+  "git": {
+    "requireCleanWorkingDir": false
+  },
+  "hooks": {
+    "after:init": ["t2k", "npm run clean"],
+    "after:bump": [
+      "syncv -p lib/rails_sluggable/version.rb",
+      "npm run build",
+      "npm run pubpush"
+    ]
+  },
+  "github": {
+    "release": false,
+    "proxy": "http://127.0.0.1:9090",
+    "releaseName": "Release ${version}",
+    "skipChecks": true,
+    "releaseNotes": "git log --no-merges --pretty=format:\"* %s %h\" ${latestTag}...main"
+  },
+  "npm": {
+    "publish": false,
+    "skipChecks": true
+  }
+}
