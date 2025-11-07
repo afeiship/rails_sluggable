@@ -3,6 +3,9 @@
 
 ## Usage
 ```rb
+# generate slug for `Posts`
+rails generate migration AddSlugToPosts slug:string:uniq
+
 class Post < ApplicationRecord
   sluggable length: 12
 end
