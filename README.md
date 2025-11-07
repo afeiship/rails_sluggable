@@ -15,6 +15,19 @@ class Article < ApplicationRecord
 end
 ```
 
+## Example
+> Use slug for post model.
+```json
+{
+  "id": 1,
+  "content": "Ruby on Rails 是一个强大的 Web 开发框架...",
+  "created_at": "2025-11-07T06:48:29.259Z",
+  "slug": "077f802de102",
+  "title": "Rails 入门指南",
+  "updated_at": "2025-11-07T06:48:29.259Z"
+}
+```
+
 ## Installation
 Add this line to your application's Gemfile:
 
