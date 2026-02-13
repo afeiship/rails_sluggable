@@ -1,0 +1,161 @@
+# RailsSluggable
+> A Rails plugin for generating configurable model slugs. Replace ID-based URLs with user-friendly, unique identifiers.
+
+RailsSluggable is a lightweight Ruby gem that automatically generates unique, random slugs for ActiveRecord models. It provides a simple way to create user-friendly URLs without exposing sequential database IDs.
+
+**Important notes for agents:**
+- The gem uses `SecureRandom.uuid` as the base for slug generation
+- Slugs are automatically generated before save if the slug field is blank
+- Uniqueness is guaranteed with up to 10 retry attempts
+- Compatible with Rails 6.0+
+
+## Documentation
+- [Repository](https://github.com/afeiship/rails_sluggable): Source code and issues
+- [RubyGems](https://rubygems.org/gems/rails_sluggable): Gem package page
+- [Changelog](https://github.com/afeiship/rails_sluggable/blob/main/CHANGELOG.md): Version history
+
+## Installation
+
+Add to your Gemfile:
+```ruby
+gem "rails_sluggable"
+```
+
+Then execute:
+```bash
+$ bundle install
+```
+
+Or install directly:
+```bash
+$ gem install rails_sluggable
+```
+
+## Key Features
+- **Automatic Generation**: Slugs are auto-generated before save when blank
+- **Configurable Length**: Set custom slug length per model
+- **Custom Separator**: Choose your preferred separator character
+- **Uniqueness Guaranteed**: Built-in retry logic ensures unique slugs
+- **Zero Configuration**: Works out of the box with sensible defaults
+
+## Usage
+
+### Basic Setup
+
+1. Add a `slug` column to your model:
+```bash
+rails generate migration AddSlugToPosts slug:string:uniq
+rails db:migrate
+```
+
+2. Add `sluggable` to your model:
+```ruby
+class Post < ApplicationRecord
+  sluggable length: 12
+end
+```
+
+### Configuration Options
+
+- `length` (default: 12): Character length of the generated slug
+- `separator` (default: ''): Optional separator for visual formatting
+
+### Examples
+
+**Default configuration:**
+```ruby
+class Post < ApplicationRecord
+  sluggable length: 12
+end
+# Generates: "a1b2c3d4e5f6"
+```
+
+**With separator:**
+```ruby
+class Article < ApplicationRecord
+  sluggable length: 8, separator: '-'
+end
+# Generates: "a1-b2-c3-d4"
+```
+
+**Minimal slug:**
+```ruby
+class User < ApplicationRecord
+  sluggable length: 6
+end
+# Generates: "a1b2c3"
+```
+
+### Generated Example
+
+```json
+{
+  "id": 1,
+  "title": "Rails 入门指南",
+  "content": "Ruby on Rails 是一个强大的 Web 开发框架...",
+  "slug": "077f802de102",
+  "created_at": "2025-11-07T06:48:29.259Z",
+  "updated_at": "2025-11-07T06:48:29.259Z"
+}
+```
+
+## Implementation Details
+
+### Module Structure
+
+**Main Module** (`lib/rails_sluggable.rb`):
+- Extends `ActiveSupport::Concern`
+- Provides `sluggable` class method for model inclusion
+- Includes `InstanceMethods` with slug generation logic
+
+**Key Methods**:
+- `generate_slug_if_blank`: Main callback triggered before save
+- `generate_unique_slug`: Generates UUID-based slug with uniqueness check
+- `save_with_slug`: Alternative method for explicit save with slug
+
+**Callbacks**:
+- `before_save :generate_slug_if_blank` - Automatically generates slug when blank
+
+### Engine Integration (`lib/rails_sluggable/engine.rb`):
+
+```ruby
+module RailsSluggable
+  class Engine < ::Rails::Engine
+    initializer 'rails_sluggable' do
+      ActiveSupport.on_load :active_record do
+        include RailsSluggable
+      end
+    end
+  end
+end
+```
+
+## Usage Notes for Agents
+
+When working with RailsSluggable:
+
+1. **Database Migration**: Always create a migration to add the `slug` column with a unique constraint
+2. **Existing Records**: The slug is only generated if blank; existing records with slugs are preserved
+3. **Uniqueness**: The gem checks database uniqueness with up to 10 retry attempts
+4. **Model Setup**: Call `sluggable` after any other concerns that might affect slug generation
+5. **Routes**: Update routes to use `slug` instead of `id`:
+   ```ruby
+   # config/routes.rb
+   resources :posts, param: :slug
+   ```
+
+## Testing
+
+The gem includes a test suite with a dummy Rails app:
+```bash
+# Run tests
+bin/test
+```
+
+## Requirements
+- Ruby >= 2.6.0
+- Rails >= 6.0.0
+- ActiveRecord
+
+## License
+MIT License - see [MIT-LICENSE](https://github.com/afeiship/rails_sluggable/blob/main/MIT-LICENSE) file
